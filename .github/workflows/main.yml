@@ -1,0 +1,49 @@
+name: Deploy static content to Pages
+on:
+  # Executa sobre push mirando a branch padrão
+  push:
+    branches: ["main"]
+  # Permite-te executar este fluxo de trabalho manualmente da aba de Actions
+  workflow_dispatch:
+# Defina as permissões da GITHUB_TOKEN para permitir a implementação para a GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+# Permite uma implementação em produção simultânea
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+jobs:
+  # Trabalho de implementação individual já que estamos apenas implementando
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{matrix.node-version}}
+          cache: "npm"
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          # Carregar o repositório dist
+          path: "./dist"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
