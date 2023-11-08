@@ -1,4 +1,5 @@
 {
+  "homepage": "https://ijulioduarte.github.io/webpack-ci-ce/",
   "name": "new-react-app",
   "version": "1.0.0",
   "description": "A new react app without CRA",
@@ -6,7 +7,9 @@
   "scripts": {
     "start": "webpack-dev-server .",
     "build": "webpack .",
-    "test": "test"
+    "test": "test",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d dist"
   },
   "author": "",
   "license": "ISC",
